@@ -13,7 +13,6 @@
 | Pydantic | Data validation and settings |
 | JWT (PyJWT) | Token-based authentication |
 | Passlib / Argon2 / Bcrypt | Password hashing |
-| RabbitMQ / aio-pika | Asynchronous messaging support |
 | Docker | Application containerization |
 | Docker Compose | Running application and database containers |
 | uv | Python dependency management |
