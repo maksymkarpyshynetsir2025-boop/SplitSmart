@@ -1,0 +1,40 @@
+services:
+  # Auth Database
+  auth_db:
+    image: postgres:16
+    container_name: auth_db
+    environment:
+      POSTGRES_DB: authdb
+      POSTGRES_USER: authuser
+      POSTGRES_PASSWORD: authpass
+    volumes:
+      - auth_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U authuser -d authdb"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Auth Service
+  auth_service:
+    build:
+      context: ./backend/services/auth_service
+      dockerfile: Dockerfile
+    container_name: auth_service
+    volumes:
+      - ./backend/services/auth_service:/app
+    env_file:
+      - ./backend/services/auth_service/.env
+    depends_on:
+      auth_db:
+        condition: service_healthy
+    ports:
+      - "8001:8000"
+    command: >
+      sh -c "
+      alembic upgrade head &&
+      uvicorn app.main:app --host 0.0.0.0 --port 8000
+      "
+
+volumes:
+  auth_db_data:
