@@ -9,6 +9,7 @@ from app.core.config import settings
 def create_access_token(id: int) -> str:
     payload = {
         "sub": str(id),
+        "type": "access",
         "exp": datetime.now(timezone.utc)
         + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES),
     }
@@ -18,6 +19,7 @@ def create_access_token(id: int) -> str:
 def create_refresh_token(id: int) -> str:
     payload = {
         "sub": str(id),
+        "type": "refresh",
         "exp": datetime.now(timezone.utc)
         + timedelta(days=settings.REFRESH_TOKEN_EXPIRE_DAY),
     }

@@ -14,7 +14,7 @@ if str(ROOT_DIR) not in sys.path:
 
 DEFAULT_ENV = {
     "DATABASE_URL": "sqlite+aiosqlite:///:memory:",
-    "JWT_SECRET": "secret",
+    "JWT_SECRET": "auth-test-secret-key-at-least-32-bytes",
     "JWT_ALG": "HS256",
     "ACCESS_TOKEN_EXPIRE_MINUTES": "15",
     "REFRESH_TOKEN_EXPIRE_DAY": "7",

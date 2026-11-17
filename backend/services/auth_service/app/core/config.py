@@ -7,6 +7,7 @@ class Settings(BaseSettings):
     JWT_ALG: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     REFRESH_TOKEN_EXPIRE_DAY: int = 7
+    INTERNAL_API_KEY: str = ""
 
     class Config:
         env_file = ".env"

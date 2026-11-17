@@ -26,8 +26,10 @@ The Auth Service provides the following functionality:
 - User login.
 - Password hashing.
 - JWT token generation.
+- Separate `access` and `refresh` token type claims.
 - User authentication.
 - User account management.
+- API-key-protected internal user lookup for trusted services.
 
 ## API Endpoints
 
@@ -91,6 +93,17 @@ Example:
 ```
 
 **Note:** Use the same email and password that were provided during registration.
+
+Access tokens contain `type: "access"` and refresh tokens contain
+`type: "refresh"`; both retain the integer user ID in `sub`.
+
+### Internal user lookup
+
+`GET /api/v1/internal/users/{user_id}` returns the user's ID and email for
+trusted backend services. It requires the `X-Internal-Api-Key` header and is
+disabled until `INTERNAL_API_KEY` is configured. Keep this key private and
+share it only with trusted services such as Group Management. The same
+protection applies to `GET /api/v1/internal/users/by-email/{email}`.
 
 ## Running the Project with Docker
 

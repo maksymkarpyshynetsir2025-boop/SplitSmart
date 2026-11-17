@@ -8,7 +8,9 @@ The application aims to help users track shared expenses, calculate individual b
 
 The project is developed using a microservices-oriented architecture. The backend is built with Python and FastAPI, while the frontend is developed using React.
 
-Currently, this repository includes the **Authentication Service (Auth Service)**, which handles user registration, login, and authentication.
+The backend includes an **Authentication Service** for registration, login,
+and JWT authentication, and a **Group Management Service** for groups,
+memberships, roles, and invitations.
 
 ## Technology Stack
 
@@ -53,7 +55,9 @@ cd SplitSmart
 
 ### 2. Run with Docker
 
-The recommended way to start the Auth Service is using Docker Compose.
+The recommended way to start the backend services is using Docker Compose.
+Configure both service `.env` files first, including the shared JWT secret and
+internal service API key described in the Group Management Service README.
 
 From the project root directory, run:
 
@@ -61,7 +65,8 @@ From the project root directory, run:
 docker compose up --build -d
 ```
 
-This command builds the Auth Service image, starts the PostgreSQL database, applies database migrations, and starts the FastAPI application.
+This command builds the backend images, starts both independent PostgreSQL
+databases, applies migrations, and starts both APIs.
 
 Check running containers:
 
@@ -73,6 +78,7 @@ View application logs:
 
 ```bash
 docker compose logs -f auth_service
+docker compose logs -f group_management_service
 ```
 
 Stop the containers:
@@ -142,7 +148,7 @@ Once the Auth Service is running, its interactive API documentation is available
 
 Use Swagger UI to explore and test the registration and login endpoints.
 
-## Auth Service Documentation
+## Service Documentation
 
 For detailed information about the Authentication Service, including:
 
@@ -155,7 +161,8 @@ For detailed information about the Authentication Service, including:
 
 See the dedicated documentation:
 
-**[Auth Service — README.md](backend/services/auth_service/README.md)**
+- [Auth Service](backend/services/auth_service/README.md)
+- [Group Management Service](backend/services/group-management-service/README.md)
 
 ## Useful Links
 
