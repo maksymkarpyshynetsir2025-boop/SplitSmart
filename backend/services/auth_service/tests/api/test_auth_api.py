@@ -6,6 +6,7 @@ from app.db.session import get_db
 from app.core.security import hash_password
 from app.models.auth import User
 from app.schemas.auth import UserLogin
+from app.core.config import settings
 
 
 @pytest.fixture
@@ -130,3 +131,33 @@ async def test_login_endpoint_returns_tokens(client, db_session):
     body = response.json()
     assert "access_token" in body
     assert body["token_type"] == "bearer"
+
+
+@pytest.mark.asyncio
+async def test_internal_user_lookup_requires_key_and_returns_limited_profile(
+    client, db_session, monkeypatch
+):
+    user = User(
+        username="internaluser",
+        email="internal@example.com",
+        password=hash_password("password123"),
+    )
+    db_session.add(user)
+    await db_session.commit()
+    await db_session.refresh(user)
+    monkeypatch.setattr(settings, "INTERNAL_API_KEY", "internal-test-key")
+
+    unauthorized = await client.get(f"/api/v1/internal/users/{user.id}")
+    authorized = await client.get(
+        f"/api/v1/internal/users/{user.id}",
+        headers={"X-Internal-Api-Key": "internal-test-key"},
+    )
+    authorized_by_email = await client.get(
+        f"/api/v1/internal/users/by-email/{user.email}",
+        headers={"X-Internal-Api-Key": "internal-test-key"},
+    )
+
+    assert unauthorized.status_code == 401
+    assert authorized.status_code == 200
+    assert authorized.json() == {"id": user.id, "email": user.email}
+    assert authorized_by_email.json() == authorized.json()

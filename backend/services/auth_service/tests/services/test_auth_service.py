@@ -1,6 +1,7 @@
 import asyncio
 
 import pytest
+import jwt
 from fastapi import HTTPException
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
@@ -8,6 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 
 from app.core.security import hash_password
+from app.core.config import settings
 from app.db.base import Base
 from app.models.auth import User
 from app.schemas.auth import UserCreate
@@ -37,6 +39,14 @@ async def test_login_user_success(db_session: AsyncSession, user: User):
 
     assert "access_token" in result and "refresh_token" in result
     assert result["token_type"] == "bearer"
+    access_claims = jwt.decode(
+        result["access_token"], settings.JWT_SECRET, algorithms=[settings.JWT_ALG]
+    )
+    refresh_claims = jwt.decode(
+        result["refresh_token"], settings.JWT_SECRET, algorithms=[settings.JWT_ALG]
+    )
+    assert access_claims["type"] == "access"
+    assert refresh_claims["type"] == "refresh"
 
 
 @pytest.mark.asyncio

@@ -8,66 +8,9 @@ The application aims to help users track shared expenses, calculate individual b
 
 The project is developed using a microservices-oriented architecture. The backend is built with Python and FastAPI, while the frontend is developed using React.
 
-Currently, this repository includes the **Authentication Service (Auth Service)**, which handles user registration, login, and authentication.
-
-## Technology Stack
-
-### Backend
-- Python 3.13
-- FastAPI
-- SQLAlchemy
-- PostgreSQL
-- Alembic
-- Pydantic
-- JWT Authentication
-- uv
-
-
-## Auth Service Documentation
-
-For detailed information about the Authentication Service, including:
-
-- Service architecture and responsibilities
-- Registration and login request formats
-- API endpoints and required input data
-- Environment configuration
-- Docker setup
-- Local development setup
-
-See the dedicated documentation:
-
-**[Auth Service — README.md](backend/services/auth_service/README.md)**
-
-## Development Workflow
-
-1. Clone the repository.
-2. Configure your local environment.
-3. Start the required services using Docker Compose or run the application locally.
-4. Implement and test your changes.
-5. Commit and push your changes to the repository.
-
-```bash
-git add .
-git commit -m "Describe your changes"
-git push
-```
-
----
-
-**SplitSmart** — Making shared expenses easier to manage.
-
-
-# SplitSmart
-
-**SplitSmart** is a web application designed to simplify the management and splitting of shared expenses between friends, roommates, families, and travel groups.
-
-The application aims to help users track shared expenses, calculate individual balances, and determine who owes money to whom.
-
-## Project Overview
-
-The project is developed using a microservices-oriented architecture. The backend is built with Python and FastAPI, while the frontend is developed using React.
-
-Currently, this repository includes the **Authentication Service (Auth Service)**, which handles user registration, login, and authentication.
+The backend includes an **Authentication Service** for registration, login,
+and JWT authentication, and a **Group Management Service** for groups,
+memberships, roles, and invitations.
 
 ## Technology Stack
 
@@ -89,34 +32,6 @@ Currently, this repository includes the **Authentication Service (Auth Service)*
 ### Infrastructure
 - Docker
 - Docker Compose
-- RabbitMQ
-- Kubernetes
-- Helm
-- Minikube
-
-## Repository Structure
-
-```text
-SplitSmart/
-│
-├── backend/
-│   ├── services/
-│   │   └── auth_service/
-│   │       ├── app/
-│   │       ├── tests/
-│   │       ├── alembic/
-│   │       ├── Dockerfile
-│   │       ├── pyproject.toml
-│   │       ├── uv.lock
-│   │       └── README.md
-│   │
-│   └── requirements.txt
-│
-├── frontend/
-│
-├── docker-compose.yaml
-└── README.md
-```
 
 ## Getting Started
 
@@ -140,7 +55,9 @@ cd SplitSmart
 
 ### 2. Run with Docker
 
-The recommended way to start the Auth Service is using Docker Compose.
+The recommended way to start the backend services is using Docker Compose.
+Configure both service `.env` files first, including the shared JWT secret and
+internal service API key described in the Group Management Service README.
 
 From the project root directory, run:
 
@@ -148,7 +65,8 @@ From the project root directory, run:
 docker compose up --build -d
 ```
 
-This command builds the Auth Service image, starts the PostgreSQL database, applies database migrations, and starts the FastAPI application.
+This command builds the backend images, starts both independent PostgreSQL
+databases, applies migrations, and starts both APIs.
 
 Check running containers:
 
@@ -160,6 +78,7 @@ View application logs:
 
 ```bash
 docker compose logs -f auth_service
+docker compose logs -f group_management_service
 ```
 
 Stop the containers:
@@ -229,7 +148,7 @@ Once the Auth Service is running, its interactive API documentation is available
 
 Use Swagger UI to explore and test the registration and login endpoints.
 
-## Auth Service Documentation
+## Service Documentation
 
 For detailed information about the Authentication Service, including:
 
@@ -242,7 +161,8 @@ For detailed information about the Authentication Service, including:
 
 See the dedicated documentation:
 
-**[Auth Service — README.md](backend/services/auth_service/README.md)**
+- [Auth Service](backend/services/auth_service/README.md)
+- [Group Management Service](backend/services/group-management-service/README.md)
 
 ## Useful Links
 
@@ -260,7 +180,6 @@ See the dedicated documentation:
 
 ### DevOps and Infrastructure
 - [Docker Documentation](https://docs.docker.com/)
-- [Docker Compose Documentation](https://docs.docker.
 
 ### Version Control
 - [Git Documentation](https://git-scm.com/doc)

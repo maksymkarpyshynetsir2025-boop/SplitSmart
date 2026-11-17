@@ -55,6 +55,13 @@ class UserOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
+class InternalUserOut(BaseModel):
+    id: int
+    email: EmailStr
+
+    model_config = ConfigDict(from_attributes=True)
+
+
 class UserUpdate(BaseModel):
     username: Optional[str] = None
     email: Optional[EmailStr] = None

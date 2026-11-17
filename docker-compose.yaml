@@ -36,5 +36,49 @@ services:
       uvicorn app.main:app --host 0.0.0.0 --port 8000
       "
 
+  # Group Management Database
+  group_db:
+    image: postgres:16
+    container_name: group_db
+    env_file:
+      - ./backend/services/group-management-service/.env
+    volumes:
+      - group_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U \"$${POSTGRES_USER}\" -d \"$${POSTGRES_DB}\"",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "5433:5432"
+
+  # Group Management Service
+  group_management_service:
+    build:
+      context: ./backend/services/group-management-service
+      dockerfile: Dockerfile
+    container_name: group_management_service
+    volumes:
+      - ./backend/services/group-management-service:/app
+    env_file:
+      - ./backend/services/group-management-service/.env
+    depends_on:
+      group_db:
+        condition: service_healthy
+      auth_service:
+        condition: service_started
+    ports:
+      - "8002:8000"
+    command: >
+      sh -c "
+      alembic upgrade head &&
+      uvicorn app.main:app --host 0.0.0.0 --port 8000
+      "
+
 volumes:
   auth_db_data:
+  group_db_data:
