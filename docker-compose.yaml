@@ -3,6 +3,8 @@ services:
   auth_db:
     image: postgres:16
     container_name: auth_db
+    ports:
+      - "5432:5432"
     environment:
       POSTGRES_DB: authdb
       POSTGRES_USER: authuser
@@ -36,5 +38,44 @@ services:
       uvicorn app.main:app --host 0.0.0.0 --port 8000
       "
 
+  # Expenses Database
+  expenses_db:
+    image: postgres:16
+    container_name: expenses_db
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_DB: expensesdb
+      POSTGRES_USER: expensesuser
+      POSTGRES_PASSWORD: expensespass
+    volumes:
+      - expenses_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U expensesuser -d expensesdb"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Expenses Service
+  expenses_service:
+    build:
+      context: ./backend/services/expenses_service
+      dockerfile: Dockerfile
+    container_name: expenses_service
+    volumes:
+      - ./backend/services/expenses_service:/app
+    env_file:
+      - ./backend/services/expenses_service/.env
+    depends_on:
+      expenses_db:
+        condition: service_healthy
+    ports:
+      - "8002:8000"
+    command: >
+      sh -c "
+      uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+      "
+
 volumes:
   auth_db_data:
+  expenses_db_data:
