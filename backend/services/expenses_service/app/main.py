@@ -1,4 +1,6 @@
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, HTTPException
+from typing import List
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 
 from app import crud, models, schemas
@@ -11,13 +13,20 @@ app = FastAPI(
     description="Microservice for calculating and optimizing shared expenses."
 )
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 def get_db():
     db = models.SessionLocal()
     try:
         yield db
     finally:
         db.close()
-
 
 
 @app.post("/api/v1/optimize-debts")
@@ -48,3 +57,20 @@ def add_expense(expense: schemas.ExpenseCreate, db: Session = Depends(get_db)):
         description=expense.description,
         splits=splits_data
     )
+
+@app.get("/api/v1/expenses/group/{group_id}", response_model=List[schemas.ExpenseResponse])
+def read_expenses(group_id: int, db: Session = Depends(get_db)):
+    expenses = crud.get_expenses_by_group(db, group_id=group_id)
+    return expenses
+
+@app.delete("/api/v1/expenses/{expense_id}")
+def remove_expense(expense_id: int, db: Session = Depends(get_db)):
+    success = crud.delete_expense(db, expense_id=expense_id)
+    if not success:
+        raise HTTPException(status_code=404, detail="Витрату не знайдено")
+    return {"message": "Витрату успішно видалено"}
+
+@app.get("/api/v1/balances/{group_id}")
+def read_balances(group_id: int, db: Session = Depends(get_db)):
+    balances = crud.get_group_balances(db, group_id=group_id)
+    return {"group_id": group_id, "balances": balances}
